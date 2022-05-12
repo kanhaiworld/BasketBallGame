@@ -6,13 +6,17 @@ import java.awt.*;
 import javax.swing.*;
 import java.util.Random;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
-public class Panel extends JPanel
+
+public class Panel extends JPanel implements ActionListener
 {
     static final int PIXEL_SIZE = 20;
-    static final int SCREEN_WIDTH = 1500;
-    static final int SCREEN_HEIGHT = 900;
-    static final int ALL_PIXELS = (SCREEN_WIDTH*SCREEN_HEIGHT)/PIXEL_SIZE;
+    static int ScreenWidth = 1499;
+    static int ScreenHeight = 899;
+    static final int ALL_PIXELS = (ScreenWidth*ScreenHeight)/PIXEL_SIZE;
     static int DELAY = 75;
   
     final int x[] = new int[ALL_PIXELS];
@@ -21,13 +25,14 @@ public class Panel extends JPanel
     int points;
     int hoopXLoc;
 
-    int basketbalXVal=5*PIXEL_SIZE;
+    int basketbalXVal=10*PIXEL_SIZE;
     int basketbalYVal= 36*PIXEL_SIZE;
     //char direction = 'R';
     
     boolean right = true;
     boolean left = false;
-    
+    //upon key listener getting indicated will turn to true and be used inside paint to draw an arc
+    boolean shoot =false;
     
     boolean gameOn = false;
     Timer timer;
@@ -37,7 +42,7 @@ public class Panel extends JPanel
         
         Frame a = new Frame();
         Dimension size= Toolkit.getDefaultToolkit().getScreenSize();
-        a.setSize(1500,900);
+        a.setSize(ScreenWidth,ScreenHeight);
         a.setBackground(Color.black); 
         
         /*
@@ -47,13 +52,12 @@ public class Panel extends JPanel
         bg = new JLabel("",img,JLabel.CENTER);
         bg.setBounds(0,0,(int) size.getWidth(),(int) size.getHeight());
         //.setBackground(Color.black);
-
         a.add(bg);
         */
     }
     public Panel(){
         random = new Random();
-        this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
+        //this.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
         //this.setBackground(Color.black); 
         this.setFocusable(true);
         
@@ -67,8 +71,12 @@ public class Panel extends JPanel
      public void startGame(){
         newHoopL();
         gameOn = true;
-        //timer = new Timer(DELAY,this);
+        timer = new Timer(DELAY,this);
         timer.start();
+    }
+    
+    public void actionPerformed(ActionEvent e){
+        repaint();
     }
     
     public void paintComponent(Graphics g){
@@ -79,34 +87,84 @@ public class Panel extends JPanel
     
     public void draw(Graphics g){
          
-            for(int i =0; i<SCREEN_HEIGHT/PIXEL_SIZE;i++){
+            for(int i =0; i<ScreenHeight/PIXEL_SIZE;i++){
                 //g.drawLine(i*PIXEL_SIZE, 0, i*PIXEL_SIZE, SCREEN_HEIGHT);
                 
-                g.drawLine(0,i*PIXEL_SIZE, SCREEN_WIDTH, i*PIXEL_SIZE);
+                g.drawLine(0,i*PIXEL_SIZE, ScreenWidth, i*PIXEL_SIZE);
             }
-            for(int i =0; i<SCREEN_WIDTH/PIXEL_SIZE;i++){
-                g.drawLine(i*PIXEL_SIZE, 0, i*PIXEL_SIZE, SCREEN_HEIGHT);
+            for(int i =0; i<ScreenWidth/PIXEL_SIZE;i++){
+                g.drawLine(i*PIXEL_SIZE, 0, i*PIXEL_SIZE, ScreenHeight);
                 
                 //g.drawLine(0,i*PIXEL_SIZE, SCREEN_WIDTH, i*PIXEL_SIZE);
             }
-   
+               
+            if(shoot==true){
+                int x = basketbalXVal;
+                int y = basketbalYVal;
+        
+                for(int i=0;i<4;i++){
+                    x+=1.5*PIXEL_SIZE;
+                    y-=2*PIXEL_SIZE;
             
-            g.setColor(Color.orange);
-            g.fillOval(5*PIXEL_SIZE,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
+                    g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+            
+                }
+            }
+            
+            g.setColor(Color.black);
+            g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
     }
+    /*
     public void drawball(Graphics g){
          g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
     
-    }
-    
+        }
+    */
     public void arc(Graphics g){
-        basketbalYVal+=PIXEL_SIZE;
-        basketbalXVal+=PIXEL_SIZE;
-        drawball(g);
+        int x = basketbalXVal;
+        int y = basketbalYVal;
+        
+        for(int i=0;i<50;i++){
+            x+=1.5*PIXEL_SIZE;
+            y-=2*PIXEL_SIZE;
+            
+            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+            
+        }
+        for(int i=0;i<3;i++){
+            x+=2*PIXEL_SIZE;
+            y-=2*PIXEL_SIZE;
+            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+        }
+        for(int i=0;i<2;i++){
+            x+=3*PIXEL_SIZE;
+            y-=PIXEL_SIZE;
+            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+        }
+        for(int i=0;i<1;i++){
+            x+=4*PIXEL_SIZE;
+            y-=PIXEL_SIZE;
+            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+        }
+        for(int i=0;i<2;i++){
+            x+=3*PIXEL_SIZE;
+            y-=-PIXEL_SIZE;
+            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+        }
+        for(int i=0;i<3;i++){
+            x+=2*PIXEL_SIZE;
+            y-=-2*PIXEL_SIZE;
+            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+        }
+        for(int i=0;i<6;i++){
+            x+=1.5*PIXEL_SIZE;
+            y-=-2*PIXEL_SIZE;
+            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+        }
     }
     
     public void newHoopL(){
-        hoopXLoc = random.nextInt((int)(SCREEN_WIDTH/PIXEL_SIZE))*PIXEL_SIZE;
+        hoopXLoc = random.nextInt((int)(ScreenWidth/PIXEL_SIZE))*PIXEL_SIZE;
         
     }
     
