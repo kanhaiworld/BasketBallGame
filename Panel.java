@@ -21,9 +21,9 @@ public class Panel extends JPanel implements ActionListener
     static int ScreenWidth;
     static int ScreenHeight;
     static final int ALL_PIXELS = (ScreenWidth*ScreenHeight)/PIXEL_SIZE;
-    static int DELAY = 75;
+    static int DELAY = 40;
   
-    final int x[] = new int[ALL_PIXELS];
+    final int xv[] = new int[ALL_PIXELS];
     //final int y[] = new int[ALL_PIXELS];
 
     int points;
@@ -42,6 +42,13 @@ public class Panel extends JPanel implements ActionListener
     Timer timer;
     Random random;
     
+    int x = basketbalXVal;
+    int y = basketbalYVal;
+    double dx = 1.5;
+    double dy = 2;
+    int ticks=0;
+    int angle = 10;
+    
     public static void main(String[] args){
         
         Frame a = new Frame();
@@ -49,9 +56,11 @@ public class Panel extends JPanel implements ActionListener
         ScreenWidth = (int) screenSize.getWidth();
         ScreenHeight = (int) screenSize.getHeight();
         //PIXEL_SIZE = 16;//(ScreenWidth*ScreenHeight*20)/1350000;
-        System.out.print(ScreenWidth + " " + ScreenHeight);
+        //System.out.print(ScreenWidth + " " + ScreenHeight);
         a.setSize((int) screenSize.getWidth(),(int) screenSize.getHeight());
-        a.setBackground(Color.black); 
+        a.setBackground(Color.black);
+        //System.out.println("listening");
+
         
         /*
         JLabel bg = new JLabel();
@@ -71,19 +80,63 @@ public class Panel extends JPanel implements ActionListener
         
         
          
-     
-        this.addKeyListener(kd);
+        //System.out.println("I am here!");
         
+        this.addKeyListener(kd);
+        startGame();
 
     }
      public void startGame(){
-        newHoopL();
+        //newHoopL();
         gameOn = true;
         timer = new Timer(DELAY,this);
         timer.start();
     }
+    /*
+    public int[] projectilecalc(int angle, int initial){
+       int t = 5;
+       int a = -32;
+       double vx = -32*t + initial * Math.sin(angle);
+       double hx = -16*t + initial * t * Math.sin(angle);
+       double vy = initial * Math.cos(angle);
+       double hy = initial * t*Math.cos(angle) + 5;
+       
+    }
+    */
     
     public void actionPerformed(ActionEvent e){
+        //System.out.print("tick");
+        ticks++;
+        if(ticks>40){
+            dx = 1;
+            dy = 1.5;
+        }
+        if(ticks>90){
+            dx = 2;
+            dy = 2;
+        }
+        if(ticks>110){
+            dx= 3;
+            dy= 1; 
+        }
+        if(ticks>140){
+            dx= 4;
+            dy= 1; 
+        }
+        if(ticks>200){
+            dx= 3;
+            dy= -1; 
+        }
+        if(ticks>250){
+            dx= 2;
+            dy= -2; 
+        }
+        if(ticks>290){
+            dx= 1.5;
+            dy= -2; 
+        }
+        x+=dx;
+        y-=dy;
         repaint();
     }
     
@@ -107,22 +160,31 @@ public class Panel extends JPanel implements ActionListener
             }
                
             if(shoot==true){
-                int x = basketbalXVal;
-                int y = basketbalYVal;
-        
-                for(int i=0;i<40;i++){
-                    g.setColor(Color.white);
-                    g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+                //int i =40;
+                //g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
+                //g.setColor(Color.red);
+                //g.clearRect(0,0,getWidth(),getHeight());
+                g.setColor(Color.red);
+                g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+                
+                //g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
+                
+                /*
+                 while(i>0){   
                     x+=1.5;
                     y-=2;
                     g.setColor(Color.red);
                     g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
-            
                 }
+                */
+                
             }
             
             g.setColor(Color.red);
             g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
+            if(shoot == true){
+              g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);  
+            }
     }
     /*
     public void drawball(Graphics g){
@@ -133,31 +195,37 @@ public class Panel extends JPanel implements ActionListener
     public void arc(Graphics g){
         int x = basketbalXVal;
         int y = basketbalYVal;
+        g.setColor(Color.black);
         
+        //int slope = (int) Math.tan(Math.toRadians(angle));
+        //System.out.println("slope: "+slope);
+        //g.drawArc( x*PIXEL_SIZE, y*PIXEL_SIZE, 80, 80, 0, 110 );
         for(int i=0;i<4;i++){
             //g.setColor(Color.white);
             //g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
-            x+=1.5*PIXEL_SIZE;
-            y-=2*PIXEL_SIZE;
+            x+=1*PIXEL_SIZE;
+            y-=1.5*PIXEL_SIZE;
             //g.setColor(Color.red);
-            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+            g.fillOval(x,y,PIXEL_SIZE/2,PIXEL_SIZE/2);
             
         }
         for(int i=0;i<3;i++){
             x+=2*PIXEL_SIZE;
             y-=2*PIXEL_SIZE;
-            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+            g.fillOval(x,y,PIXEL_SIZE/2,PIXEL_SIZE/2);
         }
         for(int i=0;i<2;i++){
             x+=3*PIXEL_SIZE;
             y-=PIXEL_SIZE;
-            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+            g.fillOval(x,y,PIXEL_SIZE/2,PIXEL_SIZE/2);
         }
+        /*
         for(int i=0;i<1;i++){
             x+=4*PIXEL_SIZE;
             y-=PIXEL_SIZE;
-            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+            g.fillOval(x,y,PIXEL_SIZE/2,PIXEL_SIZE/2);
         }
+        
         for(int i=0;i<2;i++){
             x+=3*PIXEL_SIZE;
             y-=-PIXEL_SIZE;
@@ -173,6 +241,7 @@ public class Panel extends JPanel implements ActionListener
             y-=-2*PIXEL_SIZE;
             g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
         }
+        */
     }
     
     public void newHoopL(){
@@ -181,7 +250,7 @@ public class Panel extends JPanel implements ActionListener
     }
     
     public void checkHoop(){
-        if((x[0] == hoopXLoc)){
+        if((xv[0] == hoopXLoc)){
             points ++;
             newHoopL();
         }
@@ -213,9 +282,20 @@ public class Panel extends JPanel implements ActionListener
             
             int key = e.getKeyCode();
             if(key==32){
-             shoot = true;
+                System.out.print("yes");
+                shoot = true;
             }
-            
+            /*
+            if(key==KeyEvent.VK_UP && angle !=180){
+                System.out.print("yes");
+                angle+=5;
+            }
+            if(key==KeyEvent.VK_DOWN && angle !=90){
+                System.out.print("yes");
+                angle-=5;
+            }
+            */
         }
+        
     } 
 }
