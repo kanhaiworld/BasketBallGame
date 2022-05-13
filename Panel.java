@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.*;
 import javax.swing.*;
 import java.util.Random;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
@@ -13,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Panel extends JPanel implements ActionListener
 {
+    MyKeyAdapter kd = new MyKeyAdapter(); 
     static int PIXEL_SIZE = 20;
     
     static int ScreenWidth;
@@ -69,7 +72,7 @@ public class Panel extends JPanel implements ActionListener
         
          
      
-        //this.addKeyListener(new KeyAdapter());
+        this.addKeyListener(kd);
         
 
     }
@@ -202,66 +205,17 @@ public class Panel extends JPanel implements ActionListener
         }
         repaint();
     }
+    */
     
     public class MyKeyAdapter extends KeyAdapter{
         @Override
         public void keyPressed(KeyEvent e){
             
             int key = e.getKeyCode();
-            if((key==KeyEvent.VK_LEFT) && (right == false)){
-                left = true;
-                up = false;
-                down=false;
+            if(key==32){
+             shoot = true;
             }
-            if((key==KeyEvent.VK_RIGHT) && (left == false)){
-                right = true;
-                up = false;
-                down=false;
-            }
-            if((key==KeyEvent.VK_UP) && (down == false)){
-                up = true;
-                right = false;
-                left =false;
-            }
-            if((key==KeyEvent.VK_DOWN) && (up == false)){
-                down = true;
-                right = false;
-                left =false;
-            }
-            if((key==KeyEvent.VK_ENTER) && (gameOn == false)){
-                GUI new1 = new GUI();
-                //GamePanel();
-                //window.setVisible(true);
-            }
-            
-            /*
-            switch(e.getKeyCode()){
-                
-                case KeyEvent.VK_LEFT:
-                    if(direction != 'R'){
-                        direction = 'L';
-                    }
-                    break;
-                case KeyEvent.VK_RIGHT:
-                    if(direction != 'L'){
-                        direction = 'R';
-                    }
-                    break;
-                case KeyEvent.VK_UP:
-                    if(direction != 'D'){
-                        direction = 'U';
-                    }
-                    break;
-                case KeyEvent.VK_DOWN:
-                    if(direction != 'U'){
-                        direction = 'D';
-                    }
-                    break;
-                    
-            }
-            
             
         }
     } 
-    */
 }
