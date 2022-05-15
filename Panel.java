@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.util.Random;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList; 
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
@@ -15,6 +16,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class Panel extends JPanel implements ActionListener
 {
+    ArrayList<Integer> PersonX = new ArrayList<>();    
     MyKeyAdapter kd = new MyKeyAdapter(); 
     static int PIXEL_SIZE = 20;
     
@@ -36,7 +38,10 @@ public class Panel extends JPanel implements ActionListener
     boolean right = true;
     boolean left = false;
     //upon key listener getting indicated will turn to true and be used inside paint to draw an arc
+    
     boolean shoot =false;
+    boolean moveRight = false;
+    boolean moveLeft = false;
     
     boolean gameOn = false;
     Timer timer;
@@ -48,6 +53,15 @@ public class Panel extends JPanel implements ActionListener
     double dy = 2;
     int ticks=0;
     int angle = 10;
+    int bodyx = 165;
+    int headx = 160; 
+    int leg1x = 170;
+    int leg2x = 160;
+    int hand1x = 165;
+    int hand2x = 150;
+    int polex; 
+    int backBoardx; 
+    int rimx; 
     
     public static void main(String[] args){
         
@@ -158,6 +172,15 @@ public class Panel extends JPanel implements ActionListener
                 
                 //g.drawLine(0,i*PIXEL_SIZE, SCREEN_WIDTH, i*PIXEL_SIZE);
             }
+            
+            g.fillRect(headx, 700, 20,20);
+            g.fillRect(bodyx, 720, 10,40); 
+            g.fillRect(leg1x, 760, 8, 30);
+            g.fillRect(leg2x, 760, 8, 30);
+            g.fillRect(hand1x, 730, 40, 10);
+            g.fillRect(hand2x, 730, 10, 30);
+            
+            
                
             if(shoot==true){
                 //int i =40;
@@ -180,11 +203,34 @@ public class Panel extends JPanel implements ActionListener
                 
             }
             
+            
             g.setColor(Color.red);
             g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
             if(shoot == true){
               g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);  
             }
+            
+            if(moveRight == true){
+                bodyx+=10;
+                headx += 10; 
+                leg1x += 10;
+                leg2x += 10;
+                hand1x += 10;
+                hand2x += 10;
+                basketbalXVal+=10; 
+            }
+            moveRight = false;
+            
+            if(moveLeft == true){
+                bodyx -= 10;
+                headx -= 10; 
+                leg1x -= 10;
+                leg2x -= 10;
+                hand1x -= 10;
+                hand2x -= 10;
+                basketbalXVal-=10;
+            }
+            moveLeft = false;
     }
     /*
     public void drawball(Graphics g){
@@ -285,6 +331,12 @@ public class Panel extends JPanel implements ActionListener
                 System.out.print("yes");
                 shoot = true;
             }
+            if(key==KeyEvent.VK_RIGHT){
+                moveRight = true;
+            }
+            if(key==KeyEvent.VK_LEFT){
+                moveLeft = true;
+            }
             /*
             if(key==KeyEvent.VK_UP && angle !=180){
                 System.out.print("yes");
@@ -298,4 +350,4 @@ public class Panel extends JPanel implements ActionListener
         }
         
     } 
-}
+}   
