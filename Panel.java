@@ -8,6 +8,7 @@ import java.util.Random;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList; 
+import java.lang.Math;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
@@ -31,6 +32,7 @@ public class Panel extends JPanel implements ActionListener
     int points;
     static int hoopXLoc;
     static int hoopYLoc;
+    static int lives = 3;
 
     static int basketbalXVal=10*PIXEL_SIZE;
     static int basketbalYVal;
@@ -45,6 +47,7 @@ public class Panel extends JPanel implements ActionListener
     boolean moveLeft = false;
     
     boolean gameOn = false;
+    boolean running = true;
     Timer timer;
     Random random;
     
@@ -179,12 +182,20 @@ public class Panel extends JPanel implements ActionListener
                 y=basketbalYVal;
                 ticks=0;   
             }
-            if(x==hoopXLoc && y==hoopYLoc){
+            if(x>=hoopXLoc-100 && x <=hoopXLoc+100 && y==hoopYLoc){
                 shoot = false;
                 x=basketbalXVal;
                 y=basketbalYVal;
                 ticks=0; 
                 points++;
+                System.out.println(points);
+                hoopXLoc = (int)(Math.random() * 501) + 1000;
+            }
+            if(ticks>430 && !(x>=hoopXLoc-100 && x <=hoopXLoc+100 && y==hoopYLoc)) {
+                lives--;
+                if(lives==0){
+                    running=false;
+                }
             }
             
             x+=dx;
@@ -263,7 +274,14 @@ public class Panel extends JPanel implements ActionListener
             
             //g.fillRect(hoopXLoc+4*PIXEL_SIZE,hoopYLoc+2*PIXEL_SIZE,PIXEL_SIZE,PIXEL_SIZE);
             
-               
+            g.setColor(new Color(65,105,225));
+            g.setFont(new Font("Courier",Font.BOLD,40));
+            FontMetrics metrics = getFontMetrics(g.getFont());
+            g.drawString("Score: "+ points, (ScreenWidth - metrics.stringWidth("Size: "+ points))/2, g.getFont().getSize());
+            g.setFont(new Font("Courier",Font.BOLD,40));
+            //FontMetrics metrics = getFontMetrics(g.getFont());
+            g.setColor(Color.red);
+            g.drawString("Lives: "+ lives, (metrics.stringWidth("Lives: "+ lives)), g.getFont().getSize());
             if(shoot==true){
                 //int i =40;
                 //g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
@@ -320,6 +338,7 @@ public class Panel extends JPanel implements ActionListener
                 //x-=10; 
             }
             moveLeft = false;
+            
     }
     /*
     public void drawball(Graphics g){
@@ -377,6 +396,18 @@ public class Panel extends JPanel implements ActionListener
             g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
         }
         */
+       if(running ==false){
+               g.setColor(new Color(173,216,230));
+                g.fillRect(0,0,ScreenWidth,ScreenHeight);
+                g.setColor(new Color(65,105,225));
+                g.setFont(new Font("Courier",Font.BOLD,40));
+                FontMetrics metrics1 = getFontMetrics(g.getFont());
+                g.drawString("Score: "+ points, (ScreenWidth - metrics1.stringWidth("Size: "+ points))/2, g.getFont().getSize());
+                g.setColor(new Color(0,100,0));
+                g.setFont(new Font("Courier",Font.BOLD,75));
+                FontMetrics metrics2 = getFontMetrics(g.getFont());
+                g.drawString("You Died.", (ScreenWidth - metrics2.stringWidth("You Died."))/2, ScreenHeight/2);
+       }
     }
     
     public void newHoopL(){
@@ -440,4 +471,4 @@ public class Panel extends JPanel implements ActionListener
         }
         
     } 
-}  
+}
