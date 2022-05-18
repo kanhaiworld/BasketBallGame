@@ -53,6 +53,7 @@ public class Panel extends JPanel implements ActionListener
     
     static int cloudX;
     static int cloudY;
+    static int [] bxval;
     
     int x = basketbalXVal;
     static int y = basketbalYVal;
@@ -66,6 +67,22 @@ public class Panel extends JPanel implements ActionListener
     int leg2x = 160;
     int hand1x = 165;
     int hand2x = 150;
+    
+    static int bbodyx;
+    static int bheadx; 
+    static int bleg1x;
+    static int bleg2x;
+    static int bhand1x;
+    static int bhand2x;
+
+    static int bbodyy;
+    static int bheady; 
+    static int bleg1y;
+    static int bleg2y;
+    static int bhand1y;
+    static int bhand2y;
+    static int wrandy;
+    static int randomxrem;
     int polex; 
     int backBoardx; 
     int rimx; 
@@ -81,6 +98,21 @@ public class Panel extends JPanel implements ActionListener
         y=ScreenHeight-150;
         hoopXLoc=ScreenWidth-200;
         hoopYLoc=ScreenHeight-400;
+        bbodyx= hoopXLoc-20-165;
+        bheadx= hoopXLoc-20-170;
+        bleg1x= hoopXLoc-20-170;
+        bleg2x= hoopXLoc-20-160;
+        bhand1x= hoopXLoc-20-180;
+        bhand2x= hoopXLoc-20-150;
+        
+        bbodyy = ScreenHeight-92-40-PIXEL_SIZE;
+        bheady = ScreenHeight-92-60-PIXEL_SIZE;
+        bleg1y = ScreenHeight-92-PIXEL_SIZE;
+        bleg2y = ScreenHeight-92-PIXEL_SIZE;
+        bhand1y = ScreenHeight-92-30-PIXEL_SIZE-60;
+        bhand2y = ScreenHeight-92-30-PIXEL_SIZE;
+        //int bxval[] = {bbodyx, bheadx, bleg1x, bleg2x, bhand1x, bhand2x};
+        
         cloudX=ScreenWidth-500;
         cloudY=50;
         //System.out.print(ScreenHeight);
@@ -142,16 +174,61 @@ public class Panel extends JPanel implements ActionListener
             if(ticks<40){
                 dx=0;
                 dy=0;
+                int randomx = (int) (Math.random()*4) +1;
+                randomxrem = randomx;
+                bbodyx-= randomx;
+                bheadx-= randomx;
+                bleg1x-= randomx;
+                bleg2x-= randomx;
+                bhand1x-= randomx;
+                bhand2x-= randomx;
+                /*
+                for(int i = 0; i< bxval.length; i++){
+                    bxval[i]+=5;
+                }
+                */
             }
             if(ticks>40){
+                bbodyx-= 1;
+                bheadx-= 1;
+                bleg1x-= 1;
+                bleg2x-= 1;
+                bhand1x-= 1;
+                bhand2x-= 1;
                 dx = 1;
                 dy = 1.5;
             }
+            if(ticks==90){
+                int randy = (int) (Math.random()*500) +100;
+                wrandy = randy;
+                bbodyy-=randy;
+                bheady-=randy; 
+                bleg1y-=randy;
+                bleg2y-=randy;
+                bhand1y-=randy;
+                bhand2y-=randy;
+            }
+            if(ticks==140){
+                //int randy = (int) (Math.random()*100) +1;
+                bbodyy+=wrandy;
+                bheady+=wrandy; 
+                bleg1y+=wrandy;
+                bleg2y+=wrandy;
+                bhand1y+=wrandy;
+                bhand2y+=wrandy;
+            }
             if(ticks>90){
+                bbodyx = hoopXLoc-20-165;
+                bheadx = hoopXLoc-20-170;
+                bleg1x = hoopXLoc-20-170;
+                bleg2x = hoopXLoc-20-160;
+                bhand1x= hoopXLoc-20-180;
+                bhand2x= hoopXLoc-20-150;
                 dx = 2;
                 dy = 1.5;
             }
             if(ticks>110){
+                
                 dx= 3;
                 dy= 1.5; 
             }
@@ -191,11 +268,27 @@ public class Panel extends JPanel implements ActionListener
                 System.out.println(points);
                 hoopXLoc = (int)(Math.random() * 501) + 1000;
             }
-            if(ticks>430 && !(x>=hoopXLoc-100 && x <=hoopXLoc+100 && y==hoopYLoc)) {
+            if(ticks>439 && !(x>=hoopXLoc-100 && x <=hoopXLoc+100 && y==hoopYLoc)) {
                 lives--;
+                
                 if(lives==0){
                     running=false;
                 }
+            }
+            //working
+            if(x>=bheadx && x<=bheadx+20 && y <= bheady && y > bleg1x - 30){
+                lives--;
+                
+                if(lives==0){
+                    running=false;
+                }
+            }
+            if(hand2x + 40 == bbodyx){
+              lives--;
+                
+                if(lives==0){
+                    running=false;
+                }  
             }
             
             x+=dx;
@@ -256,6 +349,15 @@ public class Panel extends JPanel implements ActionListener
             g.fillRect(leg2x, ScreenHeight-92-PIXEL_SIZE, 8, 30);
             g.fillRect(hand1x, ScreenHeight-92-30-PIXEL_SIZE, 40, 10);
             g.fillRect(hand2x, ScreenHeight-92-30-PIXEL_SIZE, 10, 30);
+            
+            //blocker
+            g.setColor(Color.white);
+            g.fillRect(bheadx, bheady, 20,20);
+            g.fillRect(bbodyx, bbodyy, 10,40); 
+            g.fillRect(bleg1x, bleg1y, 8, 30);
+            g.fillRect(bleg2x, bleg2y, 8, 30);
+            g.fillRect(bhand1x, bhand1y, 10, 30);
+            g.fillRect(bhand2x, bhand2y, 10, 30);
             
             g.setColor(Color.white);
             g.fillRect(hoopXLoc-PIXEL_SIZE,hoopYLoc,PIXEL_SIZE,PIXEL_SIZE);
@@ -396,7 +498,7 @@ public class Panel extends JPanel implements ActionListener
             g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
         }
         */
-       if(running ==false){
+       if(running ==false && lives==0){
                g.setColor(new Color(173,216,230));
                 g.fillRect(0,0,ScreenWidth,ScreenHeight);
                 g.setColor(new Color(65,105,225));
@@ -406,7 +508,7 @@ public class Panel extends JPanel implements ActionListener
                 g.setColor(new Color(0,100,0));
                 g.setFont(new Font("Courier",Font.BOLD,75));
                 FontMetrics metrics2 = getFontMetrics(g.getFont());
-                g.drawString("You Died.", (ScreenWidth - metrics2.stringWidth("You Died."))/2, ScreenHeight/2);
+                g.drawString("Heheheha", (ScreenWidth - metrics2.stringWidth("Heheheha"))/2, ScreenHeight/2);
        }
     }
     
@@ -447,7 +549,8 @@ public class Panel extends JPanel implements ActionListener
         public void keyPressed(KeyEvent e){
             
             int key = e.getKeyCode();
-            if(key==32){
+            
+            if(key==32 && ticks==0){
                 //System.out.print("yes");
                 x=basketbalXVal;
                 shoot = true;
