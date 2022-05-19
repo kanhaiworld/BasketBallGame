@@ -9,6 +9,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList; 
 import java.lang.Math;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
@@ -23,10 +26,10 @@ public class Panel extends JPanel implements ActionListener
     
     static int ScreenWidth;
     static int ScreenHeight;
-    static final int ALL_PIXELS = (ScreenWidth*ScreenHeight)/PIXEL_SIZE;
+    //static final int ALL_PIXELS = (ScreenWidth*ScreenHeight)/PIXEL_SIZE;
     static int DELAY = 5;
   
-    final int xv[] = new int[ALL_PIXELS];
+    //final int xv[] = new int[ALL_PIXELS];
     //final int y[] = new int[ALL_PIXELS];
 
     int points;
@@ -53,6 +56,7 @@ public class Panel extends JPanel implements ActionListener
     
     static int cloudX;
     static int cloudY;
+    static int cloud2X;
     static int [] bxval;
     
     int x = basketbalXVal;
@@ -83,11 +87,12 @@ public class Panel extends JPanel implements ActionListener
     static int bhand2y;
     static int wrandy;
     static int randomxrem;
-    int polex; 
-    int backBoardx; 
     int rimx; 
     
-    public static void main(String[] args){
+    static boolean lifelost = false;
+    
+    
+    public static void main(String[] args) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         
         Frame a = new Frame();
         Dimension screenSize= Toolkit.getDefaultToolkit().getScreenSize();
@@ -98,12 +103,12 @@ public class Panel extends JPanel implements ActionListener
         y=ScreenHeight-150;
         hoopXLoc=ScreenWidth-200;
         hoopYLoc=ScreenHeight-400;
-        bbodyx= hoopXLoc-20-165;
-        bheadx= hoopXLoc-20-170;
-        bleg1x= hoopXLoc-20-170;
-        bleg2x= hoopXLoc-20-160;
-        bhand1x= hoopXLoc-20-180;
-        bhand2x= hoopXLoc-20-150;
+        bbodyx= hoopXLoc-5-165;
+        bheadx= hoopXLoc-5-170;
+        bleg1x= hoopXLoc-5-170;
+        bleg2x= hoopXLoc-5-160;
+        bhand1x= hoopXLoc-5-180;
+        bhand2x= hoopXLoc-5-150;
         
         bbodyy = ScreenHeight-92-40-PIXEL_SIZE;
         bheady = ScreenHeight-92-60-PIXEL_SIZE;
@@ -115,6 +120,7 @@ public class Panel extends JPanel implements ActionListener
         
         cloudX=ScreenWidth-500;
         cloudY=50;
+        cloud2X=cloudX-700;
         //System.out.print(ScreenHeight);
         //PIXEL_SIZE = 20;//(ScreenWidth*ScreenHeight*20)/1350000;
         //System.out.print(ScreenWidth + " " + ScreenHeight);
@@ -132,6 +138,17 @@ public class Panel extends JPanel implements ActionListener
         //.setBackground(Color.black);
         a.add(bg);
         */
+       
+       File file = new File("correcttasty.wav");
+       AudioInputStream audiostream = AudioSystem.getAudioInputStream(file);
+       Clip clip = AudioSystem.getClip();
+       
+        clip.open(audiostream);
+        clip.start();
+           //lifelost=false;
+        
+        
+       
     }
     public Panel(){
         random = new Random();
@@ -146,7 +163,7 @@ public class Panel extends JPanel implements ActionListener
         this.addKeyListener(kd);
         startGame();
 
-    }
+        }
      public void startGame(){
         //newHoopL();
         gameOn = true;
@@ -167,7 +184,14 @@ public class Panel extends JPanel implements ActionListener
     
     public void actionPerformed(ActionEvent e){
         //System.out.print("tick");
-        
+        if(shoot==true){
+            cloudX++;
+            cloud2X--;
+        }
+        else{
+            cloudX--;
+            cloud2X++;
+        }
         if(shoot == true){
     
             ticks++;
@@ -182,6 +206,7 @@ public class Panel extends JPanel implements ActionListener
                 bleg2x-= randomx;
                 bhand1x-= randomx;
                 bhand2x-= randomx;
+                
                 /*
                 for(int i = 0; i< bxval.length; i++){
                     bxval[i]+=5;
@@ -195,11 +220,12 @@ public class Panel extends JPanel implements ActionListener
                 bleg2x-= 1;
                 bhand1x-= 1;
                 bhand2x-= 1;
+                
                 dx = 1;
                 dy = 1.5;
             }
             if(ticks==90){
-                int randy = (int) (Math.random()*500) +100;
+                int randy = (int) (Math.random()*80) +100;
                 wrandy = randy;
                 bbodyy-=randy;
                 bheady-=randy; 
@@ -218,12 +244,7 @@ public class Panel extends JPanel implements ActionListener
                 bhand2y+=wrandy;
             }
             if(ticks>90){
-                bbodyx = hoopXLoc-20-165;
-                bheadx = hoopXLoc-20-170;
-                bleg1x = hoopXLoc-20-170;
-                bleg2x = hoopXLoc-20-160;
-                bhand1x= hoopXLoc-20-180;
-                bhand2x= hoopXLoc-20-150;
+                
                 dx = 2;
                 dy = 1.5;
             }
@@ -245,6 +266,12 @@ public class Panel extends JPanel implements ActionListener
                 dy= -1.5; 
             }
             if(ticks>290){
+                bbodyx = hoopXLoc-5-165;
+                bheadx = hoopXLoc-5-170;
+                bleg1x = hoopXLoc-5-170;
+                bleg2x = hoopXLoc-5-160;
+                bhand1x= hoopXLoc-5-180;
+                bhand2x= hoopXLoc-5-150;
                 dx= 1.5;
                 dy= -2; 
             }
@@ -267,22 +294,54 @@ public class Panel extends JPanel implements ActionListener
                 points++;
                 System.out.println(points);
                 hoopXLoc = (int)(Math.random() * 501) + 1000;
+                bbodyx = hoopXLoc-5-165;
+                bheadx = hoopXLoc-5-170;
+                bleg1x = hoopXLoc-5-170;
+                bleg2x = hoopXLoc-5-160;
+                bhand1x= hoopXLoc-5-180;
+                bhand2x= hoopXLoc-5-150;
             }
             if(ticks>439 && !(x>=hoopXLoc-100 && x <=hoopXLoc+100 && y==hoopYLoc)) {
                 lives--;
+                lifelost=true;
                 
+                //Audio a = new Audio();
+                //a.playsound();
+            
                 if(lives==0){
                     running=false;
                 }
             }
             //working
-            if(x>=bheadx && x<=bheadx+20 && y <= bheady && y > bleg1x - 30){
+            //x>=bheadx && x<=bheadx+20 || 
+            if(x>=bheadx && x<=bheadx+20 && y < bleg2y && y > bhand1y){
+                shoot=false;
+                x=basketbalXVal;
+                y=basketbalYVal;
+                ticks=0;
                 lives--;
+                //Audio a = new Audio();
+                //a.playsound();
+                lifelost=true;
+                bbodyy = ScreenHeight-92-40-PIXEL_SIZE;
+                bheady = ScreenHeight-92-60-PIXEL_SIZE;
+                bleg1y = ScreenHeight-92-PIXEL_SIZE;
+                bleg2y = ScreenHeight-92-PIXEL_SIZE;
+                bhand1y = ScreenHeight-92-30-PIXEL_SIZE-60;
+                bhand2y = ScreenHeight-92-30-PIXEL_SIZE;
+                //bhand2x += randomxrem*40;
+                bbodyx+= randomxrem*40;
+                bheadx+= randomxrem*40;
+                bleg1x+= randomxrem*40;
+                bleg2x+= randomxrem*40;
+                bhand1x+= randomxrem*40;
+                bhand2x+= randomxrem*40;
                 
                 if(lives==0){
                     running=false;
                 }
             }
+            /*
             if(hand2x + 40 == bbodyx){
               lives--;
                 
@@ -290,6 +349,7 @@ public class Panel extends JPanel implements ActionListener
                     running=false;
                 }  
             }
+            */
             
             x+=dx;
             y-=dy;
@@ -322,14 +382,15 @@ public class Panel extends JPanel implements ActionListener
             g.fillOval(cloudX+80, cloudY+20, 70, 60);
             g.fillOval(cloudX+100, cloudY, 70, 60);
             
-            g.fillOval(cloudX+200, cloudY+50, 50, 60);
-            g.fillOval(cloudX+15+200, cloudY-25+50, 70, 80);
-            g.fillOval(cloudX+30+200, cloudY+30+50, 70, 50);
-            g.fillOval(cloudX+60+200, cloudY+50, 80, 60);
-            g.fillOval(cloudX+50+200, cloudY-30+50, 60, 40);
-            g.fillOval(cloudX+80+200, cloudY-20+50, 70, 60);
-            g.fillOval(cloudX+80+200, cloudY+20+50, 70, 60);
-            g.fillOval(cloudX+100+200, cloudY+50, 70, 60);
+            
+            g.fillOval(cloud2X, cloudY+50, 50, 60);
+            g.fillOval(cloud2X+15, cloudY-25+50, 70, 80);
+            g.fillOval(cloud2X+30, cloudY+30+50, 70, 50);
+            g.fillOval(cloud2X+60, cloudY+50, 80, 60);
+            g.fillOval(cloud2X+50, cloudY-30+50, 60, 40);
+            g.fillOval(cloud2X+80, cloudY-20+50, 70, 60);
+            g.fillOval(cloud2X+80, cloudY+20+50, 70, 60);
+            g.fillOval(cloud2X+100, cloudY+50, 70, 60);
             /*
             for(int i =0; i<ScreenHeight/PIXEL_SIZE;i++){
                 //g.drawLine(i*PIXEL_SIZE, 0, i*PIXEL_SIZE, SCREEN_HEIGHT);
@@ -379,11 +440,21 @@ public class Panel extends JPanel implements ActionListener
             g.setColor(new Color(65,105,225));
             g.setFont(new Font("Courier",Font.BOLD,40));
             FontMetrics metrics = getFontMetrics(g.getFont());
-            g.drawString("Score: "+ points, (ScreenWidth - metrics.stringWidth("Size: "+ points))/2, g.getFont().getSize());
+            g.drawString("Score: "+ points, (ScreenWidth - metrics.stringWidth("Score: "+ points))/2, g.getFont().getSize());
             g.setFont(new Font("Courier",Font.BOLD,40));
             //FontMetrics metrics = getFontMetrics(g.getFont());
             g.setColor(Color.red);
             g.drawString("Lives: "+ lives, (metrics.stringWidth("Lives: "+ lives)), g.getFont().getSize());
+            
+            g.setColor(new Color(162,38,194));
+           
+            //g.setFont(g.getFont().deriveFont(Font.BOLD,96F));
+            g.setFont(new Font("Monospaced",Font.BOLD,96));
+            //g.setFont(new Font("Courier",Font.BOLD,40));
+            //String text = "BasketBallHeop";
+            
+            g.drawString("Basketball Game",(ScreenWidth - metrics.stringWidth("Basketball Game"))/2-200, 200);
+            
             if(shoot==true){
                 //int i =40;
                 //g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
@@ -408,15 +479,7 @@ public class Panel extends JPanel implements ActionListener
             
             //g.setColor(Color.red);
             //g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-            if(shoot == true){
-              g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-              g.setColor(new Color(173,216,230));
-              g.fillRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-            }
-            else{
-                g.setColor(Color.red);
-                g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-            }
+            
             if(moveRight == true){
                 bodyx+=10;
                 headx += 10; 
@@ -441,6 +504,15 @@ public class Panel extends JPanel implements ActionListener
             }
             moveLeft = false;
             
+            if(shoot == true){
+              g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
+              g.setColor(new Color(173,216,230));
+              g.fillRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
+            }
+            else{
+                g.setColor(Color.red);
+                g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
+            }
     }
     /*
     public void drawball(Graphics g){
@@ -508,7 +580,7 @@ public class Panel extends JPanel implements ActionListener
                 g.setColor(new Color(0,100,0));
                 g.setFont(new Font("Courier",Font.BOLD,75));
                 FontMetrics metrics2 = getFontMetrics(g.getFont());
-                g.drawString("Heheheha", (ScreenWidth - metrics2.stringWidth("Heheheha"))/2, ScreenHeight/2);
+                g.drawString("Game Over", (ScreenWidth - metrics2.stringWidth("Game Over"))/2, ScreenHeight/2);
        }
     }
     
@@ -516,21 +588,7 @@ public class Panel extends JPanel implements ActionListener
         hoopXLoc = random.nextInt((int)(ScreenWidth/PIXEL_SIZE))*PIXEL_SIZE;
         
     }
-    
-    public void checkHoop(){
-        if((xv[0] == hoopXLoc)){
-            points ++;
-            newHoopL();
-        }
-    }
-    
-    public void move(){
-        
-    }
  
-    public void checkBlock(){
-        
-    }
     /*
     @Override
   public void actionPerformed(ActionEvent e){
