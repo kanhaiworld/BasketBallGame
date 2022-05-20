@@ -13,58 +13,56 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
 
 public class Panel extends JPanel implements ActionListener
 {
-    ArrayList<Integer> PersonX = new ArrayList<>();    
-    MyKeyAdapter kd = new MyKeyAdapter(); 
+    //key adapter that allows to see what player clicks    
+    MyKeyAdapter kd = new MyKeyAdapter();
+    //size of your "game pixel"
     static int PIXEL_SIZE = 20;
-    
     static int ScreenWidth;
     static int ScreenHeight;
-    //static final int ALL_PIXELS = (ScreenWidth*ScreenHeight)/PIXEL_SIZE;
+    //delay for ticks
     static int DELAY = 5;
-  
-    //final int xv[] = new int[ALL_PIXELS];
-    //final int y[] = new int[ALL_PIXELS];
 
+    //general game variables
     int points;
     static int hoopXLoc;
     static int hoopYLoc;
     static int lives = 3;
-
+    
     static int basketbalXVal=10*PIXEL_SIZE;
     static int basketbalYVal;
-    //char direction = 'R';
-    
+
+    //person movement  
     boolean right = true;
     boolean left = false;
-    //upon key listener getting indicated will turn to true and be used inside paint to draw an arc
     
+    //person is moving
     boolean shoot = false;
     boolean moveRight = false;
     boolean moveLeft = false;
     
+    //variables to start the game
     boolean gameOn = false;
     boolean running = true;
     Timer timer;
     Random random;
-    
+ 
+    //location for objects cloud and ball (x,y)
     static int cloudX;
     static int cloudY;
-    static int cloud2X;
-    static int [] bxval;
-    
+    static int cloud2X;  
     int x = basketbalXVal;
     static int y = basketbalYVal;
+    
+    //change in ball slope
     double dx = 1.5;
     double dy = 2;
+    //counting ticks 
     int ticks=0;
     int angle = 10;
+    //body variables
     int bodyx = 165;
     int headx = 160; 
     int leg1x = 170;
@@ -86,19 +84,14 @@ public class Panel extends JPanel implements ActionListener
     static int bhand1y;
     static int bhand2y;
     static int wrandy;
+    //keeping track of random number generated
     static int randomxrem;
-    int rimx; 
-    
-    static boolean lifelost = false;
-    
-    
     public static void main(String[] args) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        
+        //initializing variables
         Frame a = new Frame();
         Dimension screenSize= Toolkit.getDefaultToolkit().getScreenSize();
         ScreenWidth = (int) screenSize.getWidth();
         ScreenHeight = (int) screenSize.getHeight();
-        //int basketbalXVal=ScreenWidth-50-10*PIXEL_SIZE;
         basketbalYVal=ScreenHeight-150;
         y=ScreenHeight-150;
         hoopXLoc=ScreenWidth-200;
@@ -109,81 +102,52 @@ public class Panel extends JPanel implements ActionListener
         bleg2x= hoopXLoc-5-160;
         bhand1x= hoopXLoc-5-180;
         bhand2x= hoopXLoc-5-150;
-        
         bbodyy = ScreenHeight-92-40-PIXEL_SIZE;
         bheady = ScreenHeight-92-60-PIXEL_SIZE;
         bleg1y = ScreenHeight-92-PIXEL_SIZE;
         bleg2y = ScreenHeight-92-PIXEL_SIZE;
         bhand1y = ScreenHeight-92-30-PIXEL_SIZE-60;
         bhand2y = ScreenHeight-92-30-PIXEL_SIZE;
-        //int bxval[] = {bbodyx, bheadx, bleg1x, bleg2x, bhand1x, bhand2x};
-        
         cloudX=ScreenWidth-500;
         cloudY=50;
         cloud2X=cloudX-700;
-        //System.out.print(ScreenHeight);
-        //PIXEL_SIZE = 20;//(ScreenWidth*ScreenHeight*20)/1350000;
-        //System.out.print(ScreenWidth + " " + ScreenHeight);
         a.setSize((int) screenSize.getWidth(),(int) screenSize.getHeight());
         a.setBackground(Color.black);
-        //System.out.println("listening");
-
         
-        /*
-        JLabel bg = new JLabel();
-        bg.setSize((int) size.getWidth(),(int) size.getHeight());
-        ImageIcon img = new ImageIcon("monkey.jpg");
-        bg = new JLabel("",img,JLabel.CENTER);
-        bg.setBounds(0,0,(int) size.getWidth(),(int) size.getHeight());
-        //.setBackground(Color.black);
-        a.add(bg);
-        */
-       
+        //playing audio(music)
        File file = new File("correcttasty.wav");
        AudioInputStream audiostream = AudioSystem.getAudioInputStream(file);
        Clip clip = AudioSystem.getClip();
        
         clip.open(audiostream);
         clip.start();
-           //lifelost=false;
+  
         
         
        
     }
     public Panel(){
+        //starting game - starting game functions
         random = new Random();
-        //this.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
-        //this.setBackground(Color.black); 
         this.setFocusable(true);
-        
-        
-         
-        //System.out.println("I am here!");
-        
         this.addKeyListener(kd);
         startGame();
-
         }
      public void startGame(){
-        //newHoopL();
+        //starting timer and ticks
         gameOn = true;
         timer = new Timer(DELAY,this);
         timer.start();
     }
-    /*
-    public int[] projectilecalc(int angle, int initial){
-       int t = 5;
-       int a = -32;
-       double vx = -32*t + initial * Math.sin(angle);
-       double hx = -16*t + initial * t * Math.sin(angle);
-       double vy = initial * Math.cos(angle);
-       double hy = initial * t*Math.cos(angle) + 5;
-       
-    }
-    */
-    
+    //this is called every "tick" these actions are performed
     public void actionPerformed(ActionEvent e){
-        //System.out.print("tick");
+        /*
+        within this many actions occur here are the most important:
+        ball moves in arc
+        points are awarded
+        lives are removed if necessary
+        animations are played (clouds, npc movement(randomized))
+        */
         if(shoot==true){
             cloudX++;
             cloud2X--;
@@ -207,11 +171,7 @@ public class Panel extends JPanel implements ActionListener
                 bhand1x-= randomx;
                 bhand2x-= randomx;
                 
-                /*
-                for(int i = 0; i< bxval.length; i++){
-                    bxval[i]+=5;
-                }
-                */
+
             }
             if(ticks>40){
                 bbodyx-= 1;
@@ -235,7 +195,6 @@ public class Panel extends JPanel implements ActionListener
                 bhand2y-=randy;
             }
             if(ticks==140){
-                //int randy = (int) (Math.random()*100) +1;
                 bbodyy+=wrandy;
                 bheady+=wrandy; 
                 bleg1y+=wrandy;
@@ -278,15 +237,11 @@ public class Panel extends JPanel implements ActionListener
             
             if(ticks>440){
                 shoot=false;
-                //System.out.println("x:"+x);
-                //System.out.println("y:"+y);
-                //System.out.println("bx:"+basketbalXVal);
-                //System.out.println("by:"+basketbalYVal);
                 x=basketbalXVal;
                 y=basketbalYVal;
                 ticks=0;   
             }
-            if(x>=hoopXLoc-100 && x <=hoopXLoc+100 && y==hoopYLoc){
+            if(x>=hoopXLoc-80 && x <=hoopXLoc+80 && y==hoopYLoc){
                 shoot = false;
                 x=basketbalXVal;
                 y=basketbalYVal;
@@ -303,74 +258,89 @@ public class Panel extends JPanel implements ActionListener
             }
             if(ticks>439 && !(x>=hoopXLoc-100 && x <=hoopXLoc+100 && y==hoopYLoc)) {
                 lives--;
-                lifelost=true;
-                
-                //Audio a = new Audio();
-                //a.playsound();
-            
+
                 if(lives==0){
                     running=false;
                 }
             }
-            //working
-            //x>=bheadx && x<=bheadx+20 || 
-            if(x>=bheadx && x<=bheadx+20 && y < bleg2y && y > bhand1y){
+
+            if(x>=bheadx && x<=bheadx+20 && y < bbodyy && y > bhand1y-40){
                 shoot=false;
                 x=basketbalXVal;
                 y=basketbalYVal;
                 ticks=0;
                 lives--;
-                //Audio a = new Audio();
-                //a.playsound();
-                lifelost=true;
+
                 bbodyy = ScreenHeight-92-40-PIXEL_SIZE;
                 bheady = ScreenHeight-92-60-PIXEL_SIZE;
                 bleg1y = ScreenHeight-92-PIXEL_SIZE;
                 bleg2y = ScreenHeight-92-PIXEL_SIZE;
                 bhand1y = ScreenHeight-92-30-PIXEL_SIZE-60;
                 bhand2y = ScreenHeight-92-30-PIXEL_SIZE;
-                //bhand2x += randomxrem*40;
-                bbodyx+= randomxrem*40;
-                bheadx+= randomxrem*40;
-                bleg1x+= randomxrem*40;
-                bleg2x+= randomxrem*40;
-                bhand1x+= randomxrem*40;
-                bhand2x+= randomxrem*40;
+                bbodyx+= randomxrem*40+150;
+                bheadx+= randomxrem*40+150;
+                bleg1x+= randomxrem*40+150;
+                bleg2x+= randomxrem*40+150;
+                bhand1x+= randomxrem*40+150;
+                bhand2x+= randomxrem*40+150;
                 
                 if(lives==0){
                     running=false;
                 }
             }
-            /*
-            if(hand2x + 40 == bbodyx){
-              lives--;
-                
-                if(lives==0){
-                    running=false;
-                }  
-            }
-            */
-            
+
             x+=dx;
             y-=dy;
             repaint();
         }
         repaint();
     }
-    
+    //method required to use graphics (used to draw shapes)
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         draw(g);
         arc(g);
     }
-    
+    /*
+    is called every tick to redraw in order to make animations
+    within this everything on the screen is drawn including:
+    all backgrounds
+    players
+    ball animations
+    npc animations
+    */
     public void draw(Graphics g){
             //bg
             g.setColor(new Color(173,216,230));
             g.fillRect(0,0,ScreenWidth, ScreenHeight - PIXEL_SIZE);
+            //hills & mountain
+            int[] a = new int[3];
+            int[] b = new int[3];
+            a[0]=200*3+600; 
+            a[1]=125*3+500; 
+            a[2]=100*3+400;
+            b[0]=100*10+500; 
+            b[1]=25*10+500; 
+            b[2]=100*10+500;
+            g.setColor(new Color(172,172,172));
+            Polygon p = new Polygon(a, b, 3);
+            g.fillPolygon(p);
+            g.setColor(new Color(15,114,22));
+            g.fillOval(ScreenWidth/4-900, ScreenHeight-ScreenHeight/4+30, 1250, 2000);
+            g.setColor(new Color(71,182,37));
+            g.fillOval(ScreenWidth/4-700, ScreenHeight-ScreenHeight/4, 1250, 2000);
+            g.setColor(new Color(116,204,140));
+            g.fillOval(ScreenWidth/4+300, ScreenHeight-ScreenHeight/4-70, 1250, 2000);
+            g.setColor(new Color(15,114,22));
+            g.fillOval(ScreenWidth/4, ScreenHeight-ScreenHeight/4+50, 1250, 2000);
+            g.setColor(new Color(15,114,22));
+            g.fillOval(ScreenWidth/4+900, ScreenHeight-ScreenHeight/4+10, 1250, 2000);
+            g.setColor(new Color(71,182,37));
+            g.fillOval(ScreenWidth/4+500, ScreenHeight-ScreenHeight/4+20, 1250, 2000);
             //ground
             g.setColor(new Color(0,100,0));
             g.fillRect(0,ScreenHeight-90,ScreenWidth,90); 
+            
             //clouds
             g.setColor(Color.white);
             g.fillOval(cloudX, cloudY, 50, 60);
@@ -391,18 +361,8 @@ public class Panel extends JPanel implements ActionListener
             g.fillOval(cloud2X+80, cloudY-20+50, 70, 60);
             g.fillOval(cloud2X+80, cloudY+20+50, 70, 60);
             g.fillOval(cloud2X+100, cloudY+50, 70, 60);
-            /*
-            for(int i =0; i<ScreenHeight/PIXEL_SIZE;i++){
-                //g.drawLine(i*PIXEL_SIZE, 0, i*PIXEL_SIZE, SCREEN_HEIGHT);
-                
-                g.drawLine(0,i*PIXEL_SIZE, ScreenWidth, i*PIXEL_SIZE);
-            }
-            for(int i =0; i<ScreenWidth/PIXEL_SIZE;i++){
-                g.drawLine(i*PIXEL_SIZE, 0, i*PIXEL_SIZE, ScreenHeight);
-                
-                //g.drawLine(0,i*PIXEL_SIZE, SCREEN_WIDTH, i*PIXEL_SIZE);
-            }
-            */
+            
+            //player
             g.setColor(Color.black);
             g.fillRect(headx, ScreenHeight-92-60-PIXEL_SIZE, 20,20);
             g.fillRect(bodyx, ScreenHeight-92-40-PIXEL_SIZE, 10,40); 
@@ -419,7 +379,8 @@ public class Panel extends JPanel implements ActionListener
             g.fillRect(bleg2x, bleg2y, 8, 30);
             g.fillRect(bhand1x, bhand1y, 10, 30);
             g.fillRect(bhand2x, bhand2y, 10, 30);
-            
+             
+            //hoop
             g.setColor(Color.white);
             g.fillRect(hoopXLoc-PIXEL_SIZE,hoopYLoc,PIXEL_SIZE,PIXEL_SIZE);
             g.fillRect(hoopXLoc+5*PIXEL_SIZE,hoopYLoc,PIXEL_SIZE,PIXEL_SIZE);
@@ -435,51 +396,31 @@ public class Panel extends JPanel implements ActionListener
             g.fillRect(hoopXLoc+PIXEL_SIZE,hoopYLoc+3*PIXEL_SIZE,PIXEL_SIZE,PIXEL_SIZE);
             g.fillRect(hoopXLoc+2*PIXEL_SIZE,hoopYLoc+4*PIXEL_SIZE,PIXEL_SIZE,PIXEL_SIZE);
             
-            //g.fillRect(hoopXLoc+4*PIXEL_SIZE,hoopYLoc+2*PIXEL_SIZE,PIXEL_SIZE,PIXEL_SIZE);
-            
+            //lives & score & title display
             g.setColor(new Color(65,105,225));
             g.setFont(new Font("Courier",Font.BOLD,40));
             FontMetrics metrics = getFontMetrics(g.getFont());
             g.drawString("Score: "+ points, (ScreenWidth - metrics.stringWidth("Score: "+ points))/2, g.getFont().getSize());
             g.setFont(new Font("Courier",Font.BOLD,40));
-            //FontMetrics metrics = getFontMetrics(g.getFont());
             g.setColor(Color.red);
             g.drawString("Lives: "+ lives, (metrics.stringWidth("Lives: "+ lives)), g.getFont().getSize());
             
             g.setColor(new Color(162,38,194));
            
-            //g.setFont(g.getFont().deriveFont(Font.BOLD,96F));
             g.setFont(new Font("Monospaced",Font.BOLD,96));
-            //g.setFont(new Font("Courier",Font.BOLD,40));
-            //String text = "BasketBallHeop";
+
             
             g.drawString("Basketball Game",(ScreenWidth - metrics.stringWidth("Basketball Game"))/2-200, 200);
-            
+           
+            //ball animation
             if(shoot==true){
-                //int i =40;
-                //g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-                //g.setColor(Color.red);
-                //g.clearRect(0,0,getWidth(),getHeight());
+
                 g.setColor(Color.red);
                 g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
-                
-                //g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-                
-                /*
-                 while(i>0){   
-                    x+=1.5;
-                    y-=2;
-                    g.setColor(Color.red);
-                    g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
-                }
-                */
-                
+ 
             }
             
-            
-            //g.setColor(Color.red);
-            //g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-            
+            //person animations
             if(moveRight == true){
                 bodyx+=10;
                 headx += 10; 
@@ -488,7 +429,6 @@ public class Panel extends JPanel implements ActionListener
                 hand1x += 10;
                 hand2x += 10;
                 basketbalXVal+=10; 
-                //x+=10; 
             }
             moveRight = false;
             
@@ -500,40 +440,32 @@ public class Panel extends JPanel implements ActionListener
                 hand1x -= 10;
                 hand2x -= 10;
                 basketbalXVal-=10;
-                //x-=10; 
             }
             moveLeft = false;
             
+            //changing arm if shooting
             if(shoot == true){
-              g.clearRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-              g.setColor(new Color(173,216,230));
-              g.fillRect(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
+
+                g.clearRect(basketbalXVal,basketbalYVal,10,PIXEL_SIZE);
+              g.setColor(Color.black);
+              g.fillRect(basketbalXVal,basketbalYVal,10,PIXEL_SIZE);
             }
             else{
                 g.setColor(Color.red);
                 g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
             }
+            
+            
     }
-    /*
-    public void drawball(Graphics g){
-         g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
-    
-        }
-    */
+    //draws the reference arc(black dots)
     public void arc(Graphics g){
         int x = basketbalXVal;
         int y = basketbalYVal;
         g.setColor(Color.black);
-        
-        //int slope = (int) Math.tan(Math.toRadians(angle));
-        //System.out.println("slope: "+slope);
-        //g.drawArc( x*PIXEL_SIZE, y*PIXEL_SIZE, 80, 80, 0, 110 );
         for(int i=0;i<4;i++){
-            //g.setColor(Color.white);
-            //g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
+
             x+=1*PIXEL_SIZE;
             y-=1.5*PIXEL_SIZE;
-            //g.setColor(Color.red);
             g.fillOval(x,y,PIXEL_SIZE/2,PIXEL_SIZE/2);
             
         }
@@ -547,29 +479,7 @@ public class Panel extends JPanel implements ActionListener
             y-=PIXEL_SIZE;
             g.fillOval(x,y,PIXEL_SIZE/2,PIXEL_SIZE/2);
         }
-        /*
-        for(int i=0;i<1;i++){
-            x+=4*PIXEL_SIZE;
-            y-=PIXEL_SIZE;
-            g.fillOval(x,y,PIXEL_SIZE/2,PIXEL_SIZE/2);
-        }
-        
-        for(int i=0;i<2;i++){
-            x+=3*PIXEL_SIZE;
-            y-=-PIXEL_SIZE;
-            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
-        }
-        for(int i=0;i<3;i++){
-            x+=2*PIXEL_SIZE;
-            y-=-2*PIXEL_SIZE;
-            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
-        }
-        for(int i=0;i<6;i++){
-            x+=1.5*PIXEL_SIZE;
-            y-=-2*PIXEL_SIZE;
-            g.fillOval(x,y,PIXEL_SIZE,PIXEL_SIZE);
-        }
-        */
+        //prints game over screen if 0 lives
        if(running ==false && lives==0){
                g.setColor(new Color(173,216,230));
                 g.fillRect(0,0,ScreenWidth,ScreenHeight);
@@ -584,24 +494,13 @@ public class Panel extends JPanel implements ActionListener
        }
     }
     
+    //changes hoop location
     public void newHoopL(){
         hoopXLoc = random.nextInt((int)(ScreenWidth/PIXEL_SIZE))*PIXEL_SIZE;
         
     }
  
-    /*
-    @Override
-  public void actionPerformed(ActionEvent e){
-        if(gameOn){
-            move();
-            checkApple();
-            checkCollisions();
-            
-        }
-        repaint();
-    }
-    */
-    
+    //player inputs to move and shoot
     public class MyKeyAdapter extends KeyAdapter{
         @Override
         public void keyPressed(KeyEvent e){
@@ -609,7 +508,6 @@ public class Panel extends JPanel implements ActionListener
             int key = e.getKeyCode();
             
             if(key==32 && ticks==0){
-                //System.out.print("yes");
                 x=basketbalXVal;
                 shoot = true;
             }
@@ -619,16 +517,7 @@ public class Panel extends JPanel implements ActionListener
             if(key==KeyEvent.VK_LEFT){
                 moveLeft = true;
             }
-            /*
-            if(key==KeyEvent.VK_UP && angle !=180){
-                System.out.print("yes");
-                angle+=5;
-            }
-            if(key==KeyEvent.VK_DOWN && angle !=90){
-                System.out.print("yes");
-                angle-=5;
-            }
-            */
+
         }
         
     } 
