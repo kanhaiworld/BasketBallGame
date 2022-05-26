@@ -12,7 +12,7 @@ import java.lang.Math;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
-
+//import java.util.*;
 
 public class Panel extends JPanel implements ActionListener
 {
@@ -61,7 +61,7 @@ public class Panel extends JPanel implements ActionListener
     double dy = 2;
     //counting ticks 
     int ticks=0;
-    int angle = 10;
+    //int angle = 10;
     //body variables
     int bodyx = 165;
     int headx = 160; 
@@ -86,6 +86,30 @@ public class Panel extends JPanel implements ActionListener
     static int wrandy;
     //keeping track of random number generated
     static int randomxrem;
+    static double angle;
+    static double velocity;
+    static double t;
+    static double t2;
+    static double hx;
+    static double vy;
+    static double vx;
+    static double hy;
+    static double acc = -9.81;
+    static double totalTime;
+    static double timeIncrement;
+    static double xIncrement;
+    static boolean anglec = false;
+    static double xa;
+    static double ya;
+    static double ta;
+    static double slope1;
+    static double slope2;
+    static double slope3;
+    static double slope4;
+    static double slope5;
+    static double slope6;
+    static double slope7;
+    static double change; 
     public static void main(String[] args) throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         //initializing variables
         Frame a = new Frame();
@@ -113,7 +137,52 @@ public class Panel extends JPanel implements ActionListener
         cloud2X=cloudX-700;
         a.setSize((int) screenSize.getWidth(),(int) screenSize.getHeight());
         a.setBackground(Color.black);
+         
+        //velocity = (int) (Math.random()*20) +1;
+        velocity = 96;
+        angle = Math.toRadians(60.0);
+        t = (velocity* Math.sin(angle))/16;
+        hx = velocity * t * Math.cos(angle);
+        t2 = (velocity * Math.sin(angle))/32;
+        hy = (-16 * (t2*t2)) + (velocity* t2 * Math.sin(angle));
+        //System.out.println(t);
+        //System.out.println(hx);
+        //System.out.println(t2);
+        //System.out.println(hy);
         
+        vy = velocity * Math.sin(angle);
+        vx = velocity * Math.cos(angle);
+        totalTime = - 2.0 * vy / acc;
+        timeIncrement = totalTime / 7;
+        xIncrement = vx * timeIncrement;
+        double[] xval = new double[7];
+        double[] yval = new double[7];
+        for (int i = 1; i <= 7; i++) {
+            ta += timeIncrement;
+            xa += xIncrement;
+            ya = vy* ta + 0.5 * acc * ta * ta;
+            xval[i-1] = xa;
+            yval[i-1] = ya;
+        }
+        //change = (int)(timeIncrement*10);
+        System.out.println(change);
+        slope1 = yval[0];
+        slope2 = (yval[1]-yval[0]);
+        slope3 = (yval[2]-yval[1]);
+        slope4 = (yval[3]-yval[2]);
+        slope5 = (yval[4]-yval[3]);
+        slope6 = (yval[5]-yval[4]);
+        slope7 = (yval[6]-yval[5]);
+        /*
+        for (int i =0; i<xval.length; i++){
+            System.out.print(xval[i]+",");
+        }
+        System.out.println();
+        for (int i =0; i<yval.length; i++){
+            System.out.print(yval[i]+",");
+        }
+        */
+        //System.out.println("hi");
         //playing audio(music)
        File file = new File("correcttasty.wav");
        AudioInputStream audiostream = AudioSystem.getAudioInputStream(file);
@@ -141,6 +210,17 @@ public class Panel extends JPanel implements ActionListener
     }
     //this is called every "tick" these actions are performed
     public void actionPerformed(ActionEvent e){
+        if(anglec == true){
+            t = (velocity* Math.sin(angle))/16;
+            hx = velocity * t * Math.cos(angle);
+            t2 = (velocity * Math.sin(angle))/32;
+            hy = (-16 * (t2*t2)) + (velocity* t2 * Math.sin(angle));
+            //System.out.println(t);
+            //System.out.println(hx);
+            //System.out.println(t2);
+            //System.out.println(hy);
+            anglec = false;
+        }
         /*
         within this many actions occur here are the most important:
         ball moves in arc
@@ -181,8 +261,8 @@ public class Panel extends JPanel implements ActionListener
                 bhand1x-= 1;
                 bhand2x-= 1;
                 
-                dx = 1;
-                dy = 1.5;
+                dx = xIncrement/100;
+                dy = slope1/100;
             }
             if(ticks==90){
                 int randy = (int) (Math.random()*80) +100;
@@ -204,25 +284,25 @@ public class Panel extends JPanel implements ActionListener
             }
             if(ticks>90){
                 
-                dx = 2;
-                dy = 1.5;
+                dx = xIncrement/100;
+                dy = slope2/100;
             }
             if(ticks>110){
                 
-                dx= 3;
-                dy= 1.5; 
+                dx= xIncrement/1004;
+                dy= slope3/100; 
             }
             if(ticks>140){
-                dx= 4;
-                dy= 1.5; 
+                dx= xIncrement/100;
+                dy= slope4/100; 
             }
             if(ticks>200){
-                dx= 3;
-                dy= -1.5; 
+                dx= xIncrement/100;
+                dy= slope5/100; 
             }   
             if(ticks>250){
-                dx= 2;
-                dy= -1.5; 
+                dx= xIncrement/100;
+                dy= slope6/100; 
             }
             if(ticks>290){
                 bbodyx = hoopXLoc-5-165;
@@ -231,8 +311,8 @@ public class Panel extends JPanel implements ActionListener
                 bleg2x = hoopXLoc-5-160;
                 bhand1x= hoopXLoc-5-180;
                 bhand2x= hoopXLoc-5-150;
-                dx= 1.5;
-                dy= -2; 
+                dx= xIncrement/100;
+                dy= slope7/100; 
             }
             
             if(ticks>440){
@@ -454,8 +534,9 @@ public class Panel extends JPanel implements ActionListener
                 g.setColor(Color.red);
                 g.fillOval(basketbalXVal,basketbalYVal,PIXEL_SIZE,PIXEL_SIZE);
             }
-            
-            
+            g.setColor(Color.yellow);
+            //g.fillOval((int)hy,500,PIXEL_SIZE,PIXEL_SIZE);
+            g.drawArc(basketbalXVal,basketbalYVal-(int)hx*2,(int) hy*5,(int) hx*5,0,180); 
     }
     //draws the reference arc(black dots)
     public void arc(Graphics g){
@@ -463,7 +544,7 @@ public class Panel extends JPanel implements ActionListener
         int y = basketbalYVal;
         g.setColor(Color.black);
         for(int i=0;i<4;i++){
-
+            
             x+=1*PIXEL_SIZE;
             y-=1.5*PIXEL_SIZE;
             g.fillOval(x,y,PIXEL_SIZE/2,PIXEL_SIZE/2);
@@ -508,6 +589,7 @@ public class Panel extends JPanel implements ActionListener
             int key = e.getKeyCode();
             
             if(key==32 && ticks==0){
+                //System.out.print("yes");
                 x=basketbalXVal;
                 shoot = true;
             }
@@ -517,7 +599,14 @@ public class Panel extends JPanel implements ActionListener
             if(key==KeyEvent.VK_LEFT){
                 moveLeft = true;
             }
-
+            if(key==KeyEvent.VK_UP){
+                anglec = true;
+                angle+=Math.toRadians(1.0);
+            }
+            if(key==KeyEvent.VK_DOWN){
+                anglec = true;
+                angle-=Math.toRadians(1.0);
+            }
         }
         
     } 
